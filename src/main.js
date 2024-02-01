@@ -1,3 +1,10 @@
+import {
+	DIGITS_ARRAY,
+	OPERATORS_ARRAY,
+	TRANSFORM_ARRAY,
+} from './static/textContentArrays';
+import './style.css';
+
 let x = '';
 let y = '';
 let sign = '';
@@ -5,11 +12,11 @@ let isNewCalculation = false;
 let z = '';
 let sign0 = '';
 
-const DIGITS_ARRAY = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'];
-const OPERATORS_ARRAY = ['-', '+', 'x', '/'];
-const TRANSFORM_ARRAY = ['+/-', '%'];
-
 const output = document.getElementById('output');
+
+document.addEventListener('DOMContentLoaded', () => {
+	document.documentElement.classList.remove('hidden');
+});
 
 /**
  * Clears all the fields
@@ -146,6 +153,11 @@ document.querySelector('.buttons').onclick = (event) => {
 			y += key;
 			output.textContent = y;
 		}
+		return;
+	}
+
+	if (y === '' && x === '') {
+		output.textContent = '0';
 		return;
 	}
 
