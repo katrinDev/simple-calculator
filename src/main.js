@@ -1,16 +1,16 @@
+import { percentCount, changeSignLogic } from './utils/transformOperators';
+import { resultStringCropping } from './utils/resultFormatting';
 import {
-	DIGITS_ARRAY,
-	OPERATORS_ARRAY,
-	TRANSFORM_ARRAY,
+	basicCalculations,
+	complexCalculation,
+} from './calculations/calculations';
+import {
+	DIGITS,
+	ARITHMETIC_OPERATORS,
+	SPECIAL_OPERATORS,
 } from './static/textContentArrays';
 import './style.css';
-
-let x = '';
-let y = '';
-let sign = '';
-let isNewCalculation = false;
-let z = '';
-let sign0 = '';
+import { calcData } from './state/calculationState';
 
 const output = document.getElementById('output');
 
@@ -18,119 +18,30 @@ document.addEventListener('DOMContentLoaded', () => {
 	document.documentElement.classList.remove('hidden');
 });
 
-/**
- * Clears all the fields
- **/
-function clearAll() {
-	x = '';
-	y = '';
-	sign = '';
-	isNewCalculation = false;
-	output.textContent = '0';
-}
-/**
- * Checks if the argument is float
- * @param {number} num
- * @return {boolean}
- */
-function isFloat(num) {
-	return Number(num) === num && !Number.isInteger(num);
-}
-/**
- * Transforms the string result after calculation
- * @param {string} result
- * @return {string} - calculations result sutable for output
- */
-function resultStringCropping(result) {
-	const resultNumber = parseFloat(result);
-	if (Math.abs(resultNumber) > 1e6 || Math.abs(resultNumber) < 1e-6) {
-		return resultNumber.toExponential(5);
-	}
-
-	if (isFloat(resultNumber)) {
-		return result.slice(0, 8);
-	}
-
-	return result;
-}
-
-/**
- * Percents calculation logic
- */
-function percentCount() {
-	if (sign === '' && y === '') {
-		y = 1;
-	} else if (sign !== '' && y === '') {
-		y = x;
-	}
-	y = (x * y) / 100;
-}
-
-/**
- * Changes the sign of a numeric string
- * @param {string} value - Value to be changed
- * @return {string} - The result value with a changed sign
- */
-function changeSignLogic(value) {
-	return (-1 * parseFloat(value)).toString();
-}
-
-/**
- * Calculates depending on an operator
- */
-function calculations() {
-	if (y === '') y = x;
-	switch (sign) {
-		case '+':
-			x = +x + +y;
-			break;
-		case '-':
-			x = x - y;
-			break;
-		case 'x':
-			x = x * y;
-			break;
-		case '/':
-			if (y === '0') {
-				output.textContent = 'Error';
-				return;
-			}
-			x = x / y;
-			break;
-	}
-
-	isNewCalculation = true;
-}
-
-/**
- * Calculates final result based on the complexity of the expression
- */
-function complexResultCalculation() {
-	if (z !== '') {
-		calculations();
-		y = x;
-		x = z;
-		sign = sign0;
-		z = '';
-		sign0 = '';
-	}
-	calculations();
-
-	output.textContent = resultStringCropping(x.toString());
-}
-
 document.querySelector('.buttons').onclick = (event) => {
 	/**
-	 * An empty space was clicked, not a button
+	 * If an empty space was clicked
 	 */
-	if (!event.target.classList.contains('btn')) return;
-	/**
-	 * "Clear all" button was clicked
-	 */
-	if (event.target.id === 'ac') {
-		clearAll();
+	if (!event.target.classList.contains('btn')) {
 		return;
 	}
+	/**
+	 * If a "clear all" button was clicked
+	 */
+	if (event.target.id === 'ac') {
+		calcData.clearAll();
+
+		output.textContent = '0';
+		return;
+	}
+
+	/**
+	 * If there were incorrect operation before
+	 */
+	if (calcData.x === 'Error') {
+		return;
+	}
+
 	output.textContent = '';
 
 	/**
@@ -141,67 +52,78 @@ document.querySelector('.buttons').onclick = (event) => {
 	/**
 	 * If a digit button was clicked
 	 */
-	if (DIGITS_ARRAY.includes(key)) {
-		if (y === '' && sign === '') {
-			x += key;
-			output.textContent = x;
-		} else if (x !== '' && y !== '' && isNewCalculation) {
-			y = key;
-			isNewCalculation = false;
-			output.textContent = y;
+	if (DIGITS.includes(key)) {
+		if (calcData.y === '' && calcData.sign === '') {
+			calcData.x += key;
+			output.textContent = calcData.x;
+		} else if (
+			calcData.x !== '' &&
+			calcData.y !== '' &&
+			calcData.isNewCalculation
+		) {
+			calcData.y = key;
+			calcData.isNewCalculation = false;
+			output.textContent = calcData.y;
 		} else {
-			y += key;
-			output.textContent = y;
+			calcData.y += key;
+			output.textContent = calcData.y;
 		}
 		return;
 	}
 
-	if (y === '' && x === '') {
-		output.textContent = '0';
+	if (calcData.y === '' && calcData.x === '') {
+		output.textContent = 0;
+		return;
+	}
+	/**
+	 * If an arithmetic operator button was clicked
+	 */
+	if (ARITHMETIC_OPERATORS.includes(key)) {
+		output.textContent = key;
+		if (calcData.sign !== '') {
+			if (key === '/' || key === 'x') {
+				if (calcData.z !== '') {
+					basicCalculations();
+					calcData.sign = key;
+				} else {
+					calcData.z = calcData.x;
+					calcData.sign0 = calcData.sign;
+					calcData.sign = key;
+					calcData.x = calcData.y;
+					calcData.isNewCalculation = true;
+				}
+			} else {
+				complexCalculation();
+				calcData.sign = key;
+			}
+		} else {
+			calcData.sign = key;
+		}
 		return;
 	}
 
 	/**
-	 * If an action button was clicked
+	 * If a percentage or sign change button was clicked
 	 */
-	if (OPERATORS_ARRAY.includes(key)) {
-		output.textContent = key;
-		if (sign !== '') {
-			if (key === '/' || key === 'x') {
-				if (z !== '') {
-					calculations();
-					output.textContent = resultStringCropping(x.toString());
-					sign = key;
-				} else {
-					z = x;
-					sign0 = sign;
-					sign = key;
-					x = y;
-					isNewCalculation = true;
-				}
-			} else {
-				complexResultCalculation();
-				sign = key;
-			}
-		} else {
-			sign = key;
-		}
-		return;
-	}
-
-	if (TRANSFORM_ARRAY.includes(key)) {
+	if (SPECIAL_OPERATORS.includes(key)) {
 		switch (key) {
 			case '%':
 				percentCount();
-				output.textContent = resultStringCropping(y.toString());
+				output.textContent = resultStringCropping(
+					calcData.y.toString()
+				);
 				break;
 			case '+/-':
-				if (y !== '') {
-					y = changeSignLogic(y);
-					output.textContent = resultStringCropping(y.toString());
-				} else if (x !== '') {
-					x = changeSignLogic(x);
-					output.textContent = resultStringCropping(x.toString());
+				if (calcData.y !== '') {
+					calcData.y = changeSignLogic(calcData.y);
+					output.textContent = resultStringCropping(
+						calcData.y.toString()
+					);
+				} else if (calcData.x !== '') {
+					calcData.x = changeSignLogic(calcData.x);
+					output.textContent = resultStringCropping(
+						calcData.x.toString()
+					);
 				}
 				break;
 		}
@@ -212,7 +134,7 @@ document.querySelector('.buttons').onclick = (event) => {
 	 * If an equels button was clicked
 	 */
 	if (key === '=') {
-		complexResultCalculation();
-		sign = '';
+		complexCalculation();
+		calcData.sign = '';
 	}
 };

@@ -27,5 +27,6 @@ module.exports = {
 		indent: ['error', 'tab', { SwitchCase: 1 }],
 		'no-unused-vars': 1,
 		'space-before-function-paren': 0,
+		'comma-dangle': 0,
 	},
 };
