@@ -8,6 +8,8 @@
 
 ## How to run the app
 
+Application is available at: https://katrindev.github.io/simple-calculator/
+
 ## How to install and tweat the project
 
 Follow these steps to set up the project for future development:
