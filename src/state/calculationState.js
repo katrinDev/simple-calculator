@@ -5,6 +5,7 @@
 class CalculationState {
 	/**
 	 * Initializes all properties to their default values.
+	 * @constructor
 	 */
 	constructor() {
 		/**

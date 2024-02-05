@@ -1,3 +1,7 @@
+/**
+ * @module transformOperators
+ * @description Stores computational logic for nonarithmetic operators */
+
 import { calcData } from '../state/calculationState';
 /**
  * Calculates percentages of the number
@@ -15,7 +19,7 @@ function percentCount() {
 /**
  * Changes the sign of a numeric string
  * @param {string} value - Value to be changed
- * @return {string} - The result value with a changed sign
+ * @return {string} Value with a changed sign
  */
 function changeSignLogic(value) {
 	return (-1 * parseFloat(value)).toString();

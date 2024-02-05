@@ -1,7 +1,12 @@
 /**
+ * @module resultFormatting
+ * @description Contains functions for formatting
+ * calculation results into sutable for output form
+ */
+/**
  * Checks if the argument is float
  * @param {number} num - Number to be checked
- * @return {boolean}
+ * @return {boolean} Indicates whether number is float
  */
 function isFloat(num) {
 	return Number(num) === num && !Number.isInteger(num);
@@ -9,7 +14,7 @@ function isFloat(num) {
 /**
  * Transforms the string result after calculation
  * @param {string} result - Calculations result
- * @return {string} - Calculations result sutable for output
+ * @return {string} Calculations result sutable for output
  */
 export function resultStringCropping(result) {
 	const resultNumber = parseFloat(result);

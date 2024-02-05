@@ -1,3 +1,7 @@
+/**
+ * @module mainCalculations
+ * @description Stores computational logic for arithmetic operators */
+
 import { resultStringCropping } from '../utils/resultFormatting';
 
 import { calcData } from '../state/calculationState';
@@ -34,7 +38,7 @@ function basicCalculations() {
 }
 
 /**
- * Calculates complex operations
+ * Calculates complex expressions
  */
 function complexCalculation() {
 	if (calcData.z !== '') {
