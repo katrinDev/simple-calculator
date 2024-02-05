@@ -13,7 +13,7 @@ function percentCount() {
 	} else if (sign !== '' && y === '') {
 		calcData.y = x;
 	}
-	calcData.y = (calcData.x * calcData.y) / 100;
+	calcData.y = calcData.x * calcData.y / 100;
 }
 
 /**

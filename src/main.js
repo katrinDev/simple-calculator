@@ -101,6 +101,9 @@ document.querySelector('.buttons').onclick = (event) => {
 				calcData.sign = key;
 			}
 		} else {
+		/**
+	 	* Waiting for the right operator
+	 	*/
 			calcData.sign = key;
 		}
 		return;
